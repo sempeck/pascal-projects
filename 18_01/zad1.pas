@@ -133,6 +133,11 @@ begin
 end;  
 
 /////////////////////// d) WYSZUKIWANIE /////////////////////////////
+procedure wypisz(i : Integer);
+begin
+  writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+end;
+
 procedure search(kryterium : String); // DLACZEGO NIE DA SIĘ DWÓCH PARAMETRÓW??? var tablica : tablicaDynamiczna, 
 var
   szukane: String;
@@ -144,16 +149,17 @@ begin
   for i:=0 to Length(tablica)-1 do
     if (kryterium = 'imie') then
       if tablica[i].Imie = szukane then
-        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+        wypisz(i);
     if (kryterium = 'nazwisko') then
       if tablica[i].Nazwisko = szukane then
-        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+        wypisz(i);
     if (kryterium = 'pesel') then
       if tablica[i].Pesel = szukane then
-        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+        wypisz(i);
     if (kryterium = 'plec') then
       if tablica[i].Plec = szukane then
-        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+        wypisz(i);
+        
 end;
 
 /////////////////// e) WYŚWIETLANIE TABLICY /////////////////////////
