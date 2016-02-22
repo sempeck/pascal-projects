@@ -7,7 +7,7 @@ type tosoba = record
   Imie: string[20];
   Nazwisko: string[40];
   Pesel: string[11];
-  Plec: char;
+  Plec: string[10];
 end;
   tablicaDynamiczna = array of tosoba;
 
@@ -29,11 +29,11 @@ procedure createBinaryFile();
     osoba: tosoba;
     tablicaImion, tablicaNazwisk : array of String;
 
-  function plec(): Char;
+  function plec(): String;
     begin
       if (osoba.Imie[Length(osoba.Imie)] = 'a') then
-        plec := 'K'
-        else plec := 'M'; 
+        plec := 'kobieta'
+        else plec := 'mezczyzna'; 
     end;
 
   begin 
@@ -127,9 +127,6 @@ begin
         end;
     end;
   close(baza);
-
-// for n:=1 to Length(tablica)-1 do
-//   writeln('tab: ', tablica[n].Imie);
 end;  
 
 /////////////////////// d) WYSZUKIWANIE /////////////////////////////
@@ -143,10 +140,12 @@ var
   szukane: String;
   i: Integer;
 begin
+
   writeln('Podaj ', kryterium, ' do wyszukania: ');
   readln(szukane);
 
   for i:=0 to Length(tablica)-1 do
+    begin 
     if (kryterium = 'imie') then
       if tablica[i].Imie = szukane then
         wypisz(i);
@@ -159,6 +158,7 @@ begin
     if (kryterium = 'plec') then
       if tablica[i].Plec = szukane then
         wypisz(i);
+    end;
         
 end;
 
