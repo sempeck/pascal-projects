@@ -9,17 +9,19 @@ type tosoba = record
   Pesel: string[11];
   Plec: char;
 end;
+  tablicaDynamiczna = array of tosoba;
 
 var
   menu: Integer;
   k : Char;
+  kryterium : string;
 
   baza : file of tosoba;
   bazaTekstowa : text;
   plikBaza, plikBazaTekstowa, plikImiona, plikNazwiska : String;
-
+  tablica : tablicaDynamiczna;
   
-////////// a) TWORZENIE PLIKU BINARNEGO ///////
+////////////////////// a) TWORZENIE PLIKU BINARNEGO /////////////////
 procedure createBinaryFile();
   var 
     imiona, nazwiska : text;
@@ -38,7 +40,7 @@ procedure createBinaryFile();
     // tablica imion
     assign(imiona, plikImiona);
     reset(imiona);
-    Setlength(tablicaImion, 1);
+    SetLength(tablicaImion, 1);
       while not eof(imiona) do
        begin
          readln(imiona, tablicaImion[Length(tablicaImion)-1]);
@@ -49,7 +51,7 @@ procedure createBinaryFile();
     // tablica nazwisk
     assign(nazwiska, plikNazwiska);
     reset(nazwiska);
-    Setlength(tablicaNazwisk, 1);
+    SetLength(tablicaNazwisk, 1);
       while not eof(nazwiska) do
        begin
          readln(nazwiska, tablicaNazwisk[Length(tablicaNazwisk)-1]);
@@ -76,7 +78,7 @@ procedure createBinaryFile();
     
   end;
 
-////// b) Z BINARNEGO DO TEKSTOWEGO ////////
+/////////////////// b) Z BINARNEGO DO TEKSTOWEGO ////////////////////
 
 procedure binaryToText();
 var
@@ -100,16 +102,91 @@ begin
 
 end;
 
-////// c) ZAKRES REKORDÓW DO TABLICY DYNAMICZNEJ ////////
+///////////// c) ZAKRES REKORDÓW DO TABLICY DYNAMICZNEJ /////////////
 
-// c) Wpisującą do tablicy dynamicznej rekordy z pliku z zakresu od N do M gdzie N i M są pozycjami w pliku binarnym podawanymi podczas działania programu. Parametrem procedury ma być tablica.
+procedure range(var tablica : tablicaDynamiczna);
+var
+  n,m,i: Integer;
 
+begin
+  writeln('Podaj n: ');
+  readln(n);
+  writeln('Podaj m: ');
+  readln(m);      
 
+  assign(baza, plikBaza);
+  reset(baza);
+  SetLength(tablica, 0);
+  Seek(baza, n-1);
+  for i:=n to m do
+    begin
+      if not eof(baza) then 
+        begin
+          SetLength(tablica, Length(tablica)+1);
+          Read(baza, tablica[length(tablica)-1]);
+        end;
+    end;
+  close(baza);
 
+// for n:=1 to Length(tablica)-1 do
+//   writeln('tab: ', tablica[n].Imie);
+end;  
 
+/////////////////////// d) WYSZUKIWANIE /////////////////////////////
+procedure search(kryterium : String); // DLACZEGO NIE DA SIĘ DWÓCH PARAMETRÓW??? var tablica : tablicaDynamiczna, 
+var
+  szukane: String;
+  i: Integer;
+begin
+  writeln('Podaj ', kryterium, ' do wyszukania: ');
+  readln(szukane);
 
+  for i:=0 to Length(tablica)-1 do
+    if (kryterium = 'imie') then
+      if tablica[i].Imie = szukane then
+        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+    if (kryterium = 'nazwisko') then
+      if tablica[i].Nazwisko = szukane then
+        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+    if (kryterium = 'pesel') then
+      if tablica[i].Pesel = szukane then
+        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+    if (kryterium = 'plec') then
+      if tablica[i].Plec = szukane then
+        writeln('Znaleziono: ', tablica[i].imie, ' ', tablica[i].nazwisko, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+end;
 
-//////////// PROGRAM GŁÓWNY ////////////////
+/////////////////// e) WYŚWIETLANIE TABLICY /////////////////////////
+
+procedure show(var tablica : tablicaDynamiczna);
+var
+  i: Integer;
+begin
+  for i:=0 to length(tablica)-1 do
+    begin
+      writeln(tablica[i].imie, ' ', tablica[i].nazwisko, ', ID: ', tablica[i].id, ', PESEL: ', tablica[i].Pesel, ', płeć: ', tablica[i].Plec, '.');
+      writeln();
+    end;
+end;
+
+/////////////////// f) USUWANIE Z TABLICY ///////////////////////////
+
+procedure delete(var tablica : tablicaDynamiczna);
+var
+  i: Integer;
+  del: longint;
+begin
+  writeln('Podaj ID osoby do skasowania: ');
+  readln(del);
+    for i:=del-1 to Length(tablica)-2 do 
+      begin
+        tablica[i]:=tablica[i+1];
+      end;
+  Setlength(tablica, length(tablica)-1);
+  Writeln('Osoba usunięta.');
+end;
+
+//////////////////////// PROGRAM GŁÓWNY /////////////////////////////
 begin
 
 randomize;
@@ -120,25 +197,32 @@ plikBazaTekstowa := '/Users/Mediorama/PROJEKTY/_PROGRAMOWANIE/Pascal/18_01/baza.
 plikBaza := '/Users/Mediorama/PROJEKTY/_PROGRAMOWANIE/Pascal/18_01/baza.bin';
 
 repeat
-    writeln();
-    writeln('Menu: ');
-    writeln('1: Tworzenie pliku binarnego z losowymi danymi 25 tysięcy osób.');
-    writeln('2: Kopiowanie pliku binarnego do tekstowego.');
-    writeln('3: ');
-    writeln('4: ');
-    writeln('5: ');
-    writeln('6: ');
-    writeln('0: ');
-    readln(menu);
+  writeln();
+  writeln('Menu: ');
+  writeln('1: Tworzenie pliku binarnego z losowymi danymi 25 tysięcy osób.');
+  writeln('2: Kopiowanie pliku binarnego do tekstowego.');
+  writeln('3: Podaj zakres rekordów do skopiowania do tablicy dynamicznej.');
+  writeln('4: Wyszukaj w tablicy dynamicznej.');
+  writeln('5: Wyświetlaj dynamiczną tablicę rekordów.');
+  writeln('6: Usuń wybraną osobę z tablicy dynamicznej.');
+  writeln('0: Koniec.');
+  readln(menu);
 
-    Case menu of
-    1 : createBinaryFile();
-    2 : binaryToText();
-    3 : ;
-    4 : ;
-    0 : k:='k';
+  Case menu of
+  1 : createBinaryFile();
+  2 : binaryToText();
+  3 : range(tablica);
+  4 : 
+    begin
+      writeln('Według jakiego kryterium (imie/nazwisko/pesel/plec)?');
+        readln(kryterium);
+        search(kryterium);      
     end;
-  until k='k';
+  5 : show(tablica);
+  6 : delete(tablica);
+  0 : k:='k';
+  end;
+until k='k';
 
 end.
 
