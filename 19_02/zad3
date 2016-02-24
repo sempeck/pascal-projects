@@ -1,0 +1,5 @@
+Napisz program obliczający N-ty element ciągu Fibonacciego (rekurencyjnie). Wartość N
+ma być liczbą całkowitą podaną przez użytkownika z klawiatury.
+Przykład
+N=6
+1+1+2+3+5+8
