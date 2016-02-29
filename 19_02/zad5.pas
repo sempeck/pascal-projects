@@ -6,8 +6,18 @@ var
   a, b: Integer;
 
 function dzielnik(a,b: Integer): Integer;
-  begin
-    
+  // begin
+  //   if (b<>0) then
+  //     dzielnik(b, a mod b)
+  //   else
+  //     dzielnik := a;
+  // end;
+
+ begin
+    if (b=0) then
+      dzielnik := a
+    else
+      dzielnik(b, a mod b);
   end;
 
 begin
@@ -15,6 +25,8 @@ begin
   readln(a);
   writeln('Podaj liczbę b:');
   readln(b);
-
-  dzielnik(a,b);
+  writeln('Największy współny dzielnik: ', dzielnik(a,b));
 end.
+
+
+// 42 i 56 = 14
