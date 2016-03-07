@@ -3,8 +3,9 @@ program zadanie1;
 uses
   sysutils;
 
+const N = 5;
 type
-  arr = array[1..5] of Integer;
+  arr = array[1..N] of Integer;
   tosoba = record
     nazwisko: string[20];
     r, m, d: word;
@@ -31,7 +32,7 @@ begin
   wskaznikInteger^ := random(100);  // inicjalizacja
   wskaznikReal^ := random(100);
   wskaznikString^ := IntToStr(random(100));
-  for i := 1 to 5 do 
+  for i := 1 to N do 
     wskaznikArr^[i] := random(100);
 
   wskaznikTOsoba^.nazwisko := IntToStr(random(100));
@@ -43,7 +44,7 @@ begin
   writeln(wskaznikInteger^);  // pokazanie na ekranie
   writeln(wskaznikReal^:0:2);
   writeln(wskaznikString^);
-  for i := 1 to 5 do 
+  for i := 1 to N do 
     write(wskaznikArr^[i], ' ');
   writeln(wskaznikTOsoba^.nazwisko);
   writeln(wskaznikTOsoba^.r);
