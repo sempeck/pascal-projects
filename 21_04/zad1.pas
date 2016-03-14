@@ -6,7 +6,7 @@ type
   tlista = record
     imie: string[20];
     nazwisko: string[30];
-    wiek:byte;
+    wiek: byte;
     PESEL: string;
     wsk: lista;
   end;
@@ -15,8 +15,8 @@ var
   pocz : lista;
   k: char;
   menu: Integer;
-
-procedure dodaj(poprzedni: lista);
+/////////////////////////////////////////////////////////
+procedure dodaj(var pocz: lista);
 var
   tmp: lista;
 begin
@@ -30,37 +30,39 @@ begin
   writeln('Podaj PESEL:');
   readln(tmp^.PESEL);
 
-  if poprzedni = nil then
+  if pocz = nil then
     begin
       pocz := tmp;
       tmp^.wsk := nil;
     end
   else
     begin
-      tmp^.wsk := poprzedni^.wsk;
-      poprzedni^.wsk := tmp;
+      tmp^.wsk := pocz^.wsk;
+      pocz^.wsk := tmp;
     end;
 end;
-
-procedure usun(poprzedni: lista);
+/////////////////////////////////////////////////////////
+procedure usun(var pocz: lista);
 var
   tmp: lista;
 begin
-  if poprzedni^.wsk <> nil then
+  if pocz^.wsk <> nil then
     begin
-      tmp := poprzedni^.wsk^.wsk;
-      Dispose(poprzedni^.wsk);
-      poprzedni^.wsk := tmp;
+      tmp := pocz^.wsk^.wsk;
+      Dispose(pocz^.wsk);
+      pocz^.wsk := tmp;
     end
   else
     pocz := nil;
 end;
-
-procedure wypisz();
+/////////////////////////////////////////////////////////
+procedure wypisz(pocz: lista);
 var
  tmp: lista;
 begin
  tmp := pocz;
+ if pocz=nil then writeln('Stos jest pusty.')
+  else
  while tmp <> nil do
   begin
     writeln('Imię: ', tmp^.imie);
@@ -71,12 +73,14 @@ begin
     tmp := tmp^.wsk;
   end;
 end;
-
-procedure nazwiska();
+/////////////////////////////////////////////////////////
+procedure nazwiska(pocz: lista);
 var
   tmp: lista;
 begin
   tmp := pocz;
+  if pocz=nil then writeln('Stos jest pusty.')
+  else
   while tmp <> nil do
     begin
       if (length(tmp^.nazwisko) > length(tmp^.imie)) then
@@ -90,27 +94,44 @@ begin
       tmp := tmp^.wsk;
     end;
 end;
-
-procedure pesel();
+/////////////////////////////////////////////////////////
+procedure pesel(var pocz: lista);
 var
-  tmp: lista;
-  // tablica posortowanych wskaźników
+  tablica: array of tlista;
+  tmp: tlista;
+  i,j: integer;
 begin
-  tmp := pocz;
-  while tmp <> nil do
-    begin
-      if (length(tmp^.nazwisko) > length(tmp^.imie)) then
-        begin
-          writeln('Imię: ', tmp^.imie);
-          writeln('Nazwisko: ', tmp^.nazwisko);
-          writeln('Wiek: ', tmp^.wiek);
-          writeln('PESEL: ', tmp^.PESEL);
-          writeln();        
-        end;
-      tmp := tmp^.wsk;
-    end;
-end;
+  i:=0;
+  if pocz=nil then writeln('Stos jest pusty.')
+  else
+    while pocz<>nil do 
+      begin
+        setlength(tablica, i+1);
+        tablica[i] := pocz^;
+        pocz := pocz^.wsk;
+        i := i+1;
+      end;
 
+for i:=0 to length(tablica)-2 do
+  for j := length(tablica)-1 downto i+1 do
+    if tablica[j].pesel < tablica[j-1].pesel then
+      begin
+        tmp:=tablica[j-1];
+        tablica[j-1]:=tablica[j];
+        tablica[j]:=tmp;
+      end;
+
+for i:=0 to length(tablica)-1 do
+  begin
+    writeln('Imię: ', tablica[i].imie);
+    writeln('Nazwisko: ', tablica[i].nazwisko);
+    writeln('Wiek: ', tablica[i].wiek);
+    writeln('PESEL: ', tablica[i].pesel);
+    writeln(); 
+    pocz := tablica[i].wsk;
+  end;
+end;
+/////////////////////////////////////////////////////////
 
 begin
   pocz := nil;
@@ -129,16 +150,15 @@ repeat
   Case menu of
   1 : dodaj(pocz);
   2 : usun(pocz);
-  3 : wypisz();
-  4 : nazwiska();
-  5 : pesel();
+  3 : wypisz(pocz);
+  4 : nazwiska(pocz);
+  5 : pesel(pocz);
   0 : k:='k';
   end;
 until k='k';
 
-
 end.
-
+/////////////////////////////////////////////////////////
 
 // Lista 4
 // Zadanie 1. Zadeklarować typy danych określające listę jednokierunkową:
